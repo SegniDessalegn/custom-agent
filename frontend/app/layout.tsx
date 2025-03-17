@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Provider } from 'react-redux';
 import { store } from "@/store";
+import { ThemeProvider } from "next-themes";
 
 
 const geistSans = Geist({
@@ -28,14 +29,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Provider store={store}>
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          {children}
-        </body>
-      </html>
-     </Provider>
+      <ThemeProvider attribute="class" defaultTheme="dark">
+        <Provider store={store}>
+            <html lang="en">
+              <body
+                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+              >
+                {children}
+              </body>
+            </html>
+        </Provider>
+      </ThemeProvider>
   );
 }
