@@ -5,15 +5,17 @@ interface Message {
   isBot: boolean;
 }
 interface SSEState {
-  messages: Message[]; // Array to store all chunks of data
+  messages: Record<string, Message[]>;
   loading: boolean;
   canSendMessage: boolean;
+  sessionId: string | undefined;
 }
 
 const initialState: SSEState = {
-  messages: [],
+  messages: {},
   loading: false,
   canSendMessage: true,
+  sessionId: undefined,
 };
 
 const sseSlice = createSlice({
@@ -27,26 +29,37 @@ const sseSlice = createSlice({
       state.loading = false;
     },
     addMessage: (state, action: PayloadAction<Message>) => {
-      if (state.messages.length === 0) {
-        state.messages.push(action.payload);
+      if (state.sessionId === undefined) {
+        state.sessionId = new Date().toLocaleString();
+      }
+      // let currentChat = state.messages[state.sessionId];
+      if (!state.messages[state.sessionId]) {
+        state.messages[state.sessionId] = [];
+      }
+
+      if (state.messages[state.sessionId].length === 0) {
+        state.messages[state.sessionId].push(action.payload);
         return;
       } else if (action.payload.isBot) {
-        const lastMessage = state.messages[state.messages.length - 1];
+        const lastMessage = state.messages[state.sessionId][state.messages[state.sessionId].length - 1];
         if (lastMessage.isBot === action.payload.isBot) {
-          state.messages[state.messages.length - 1].text += action.payload.text;
+          state.messages[state.sessionId][state.messages[state.sessionId].length - 1].text += action.payload.text;
           return;
         } else {
-          state.messages.push(action.payload);
+          state.messages[state.sessionId].push(action.payload);
         }
       } else {
-        state.messages.push(action.payload);
+        state.messages[state.sessionId].push(action.payload);
       }
     },
     setCanSendMessage: (state, value: PayloadAction<boolean>) => {
       state.canSendMessage = value.payload
+    },
+    setSessionId: (state, value: PayloadAction<string>) => {
+      state.sessionId = value.payload
     }
   },
 });
 
-export const { startLoading, stopLoading, addMessage, setCanSendMessage } = sseSlice.actions;
+export const { startLoading, stopLoading, addMessage, setCanSendMessage, setSessionId } = sseSlice.actions;
 export default sseSlice.reducer;
