@@ -40,10 +40,31 @@ export default function Page() {
     dispatch(setSessionId(sessionId));
   }
 
+  function handleSubmit(prompt: string) {
+    if (prompt === "") {
+      return;
+    }
+    if (!sessionId) {
+      dispatch(setSessionId(new Date().toLocaleString()));
+    }
+
+    dispatch(
+      addMessage({
+        text: prompt,
+        isBot: false,
+      })
+    );
+
+    dispatch(setCanSendMessage(false));
+
+    handleSSE(sessionId || " ", prompt);
+  }
+
   const chats = Object.keys(messages);
 
   return (
     <div className="flex gap-3 h-screen">
+      {/* Sidebar */}
       <div className="w-[350px] h-full border-r-2 border-r-gray-900 flex flex-col justify-start">
         <Button
           onClick={handleNewChat}
@@ -53,7 +74,7 @@ export default function Page() {
         </Button>
         <div className="mx-3 mb-5 flex flex-col gap-2">
           {chats.map((chat: string) => (
-            <div>
+            <div key={chat}>
               <Button
                 onClick={() => handleChatChange(chat)}
                 variant={"link"}
@@ -66,45 +87,42 @@ export default function Page() {
           ))}
         </div>
       </div>
-      <div className="flex flex-col justify-end w-full h-full">
+
+      <div className="flex flex-col w-full h-full">
         {sessionId && messages[sessionId] && (
-            <div className="flex flex-col justify-end overflow-y-auto p-5">
+          <div className="flex flex-col justify-end flex-1 h-[calc(100vh-80px)] overflow-y-auto p-5">
             <div className="space-y-4">
-                {messages[sessionId].map((message, index) => (
+              {messages[sessionId].map((message, index) => (
                 <div
-                    key={index}
-                    className={`flex ${
+                  key={index}
+                  className={`flex ${
                     message.isBot ? "justify-start" : "justify-end"
-                    }`}
+                  }`}
                 >
-                    <div
+                  <div
                     className={`w-fit p-2 rounded-lg ${
-                        message.isBot
+                      message.isBot
                         ? "mr-10"
                         : "bg-gray-950 border-[1px] border-gray-900"
                     }`}
-                    >
+                  >
                     {message.text}
-                    </div>
+                  </div>
                 </div>
-                ))}
+              ))}
             </div>
             <div ref={messagesEndRef} />
-            </div>
+          </div>
         )}
-
-        <div className="p-4">
+        
+        <div className="p-4 border-t my-auto border-gray-900">
           <Input
-            // disabled={!canSendMessage}
             className="w-full max-w-2xl mx-auto"
             placeholder="Enter your message"
+            autoFocus
             onKeyDown={(e: any) => {
-              if (e.key === "Enter" && e.target.value.trim() !== "") {
-                setCanSendMessage(false);
-                dispatch(
-                  addMessage({ text: e.target.value.trim(), isBot: false })
-                );
-                handleSSE(sessionId as string, e.target.value.trim()); // Send the message to the bot
+              if (e.key === "Enter" && e.target.value !== "") {
+                handleSubmit(e.target.value);
                 e.target.value = "";
               }
             }}
@@ -114,31 +132,3 @@ export default function Page() {
     </div>
   );
 }
-
-/*
-
-
-<h1>{loading ? 'Loading SSE...' : 'SSE Messages'}</h1>
-            <button
-            onClick={() => {
-                handleSSE();
-                }}
-                >
-            Start SSE Event
-            </button>
-
-
-
-
-            <div>
-            {messages.length > 0 ? (
-                <div>
-                {messages.map((message, index) => (
-                    <span key={index}>{message}</span> // Display each message chunk as it comes
-                    ))}
-                </div>
-            ) : (
-                <p>No messages yet.</p>
-                )}
-            </div>
-*/
