@@ -62,31 +62,34 @@ export default function Page() {
 
   const chats = Object.keys(messages);
 
+  console.log("--->", sessionId, sessionId && messages[sessionId]);
+
   return (
     <div className="flex gap-3 h-screen">
-      {/* Sidebar */}
-      <div className="w-[350px] h-full border-r-2 border-r-gray-900 flex flex-col justify-start">
-        <Button
-          onClick={handleNewChat}
-          className="mx-3 my-5 font-bold cursor-pointer"
-        >
-          + New Chat
-        </Button>
-        <div className="mx-3 mb-5 flex flex-col gap-2">
-          {chats.map((chat: string) => (
-            <div key={chat}>
-              <Button
-                onClick={() => handleChatChange(chat)}
-                variant={"link"}
-                className="pb-2 cursor-pointer shadow-none"
-              >
-                {chat}
-              </Button>
-              <Separator />
-            </div>
-          ))}
+      {sessionId !== undefined && (
+        <div className="w-[350px] h-full border-r-2 border-r-gray-900 flex flex-col justify-start">
+          <Button
+            onClick={handleNewChat}
+            className="mx-3 my-5 font-bold cursor-pointer"
+          >
+            + New Chat
+          </Button>
+          <div className="mx-3 mb-5 flex flex-col gap-2">
+            {chats.map((chat: string) => (
+              <div key={chat}>
+                <Button
+                  onClick={() => handleChatChange(chat)}
+                  variant={"link"}
+                  className="pb-2 cursor-pointer shadow-none"
+                >
+                  {chat}
+                </Button>
+                <Separator />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="flex flex-col w-full h-full">
         {sessionId && messages[sessionId] && (
@@ -114,8 +117,19 @@ export default function Page() {
             <div ref={messagesEndRef} />
           </div>
         )}
-        
-        <div className="p-4 border-t my-auto border-gray-900">
+
+        <div className="p-4 my-auto">
+          {(sessionId === undefined || !messages[sessionId] || messages[sessionId].length === 0) && (
+            <div className="my-10 flex flex-col items-center">
+              <div className="text-center text-7xl font-extrabold">LEX</div>
+              <span>
+                By Segni Dessalegn,{" "}
+                <a className="hover:underline" href="https://segni.dev" target="_blank">
+                  segni.dev
+                </a>
+              </span>
+            </div>
+          )}
           <Input
             className="w-full max-w-2xl mx-auto"
             placeholder="Enter your message"
