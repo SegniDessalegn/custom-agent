@@ -13,6 +13,7 @@ import { useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { BeatLoader } from "react-spinners";
+import Tools from "./Tools";
 
 export default function Page() {
   const dispatch = useDispatch();
@@ -47,8 +48,8 @@ export default function Page() {
     if (prompt === "") {
       return;
     }
-    if (!sessionId) {
-      dispatch(setSessionId(new Date().toLocaleString()));
+    if (sessionId === undefined) {
+        dispatch(setSessionId(new Date().toLocaleString()));
     }
 
     dispatch(
@@ -59,16 +60,22 @@ export default function Page() {
     );
 
     dispatch(setCanSendMessage(false));
-
-    handleSSE(sessionId || " ", prompt);
+    handleSSE(sessionId || "_id", prompt);
   }
 
+  useEffect(()=>{
+    dispatch(setSessionId(new Date().toLocaleString()));
+  }, [])
+
   const chats = Object.keys(messages);
-  const noConversation = sessionId === undefined || !messages[sessionId] || messages[sessionId].length === 0
+  const noConversation =
+    sessionId === undefined ||
+    !messages[sessionId] ||
+    messages[sessionId].length === 0;
 
   return (
     <div className="flex gap-3 h-screen">
-      {sessionId !== undefined && (
+      {chats.length === 1 && (
         <div className="w-[350px] h-full border-r-2 border-r-gray-900 flex flex-col justify-start">
           <Button
             onClick={handleNewChat}
@@ -97,41 +104,61 @@ export default function Page() {
         {sessionId && messages[sessionId] && (
           <div className="flex flex-col overflow-y-auto p-5">
             <div className="space-y-4">
-              {messages[sessionId].map((message, index) => (
-                <div
-                  key={index}
-                  className={`flex ${
-                    message.isBot ? "justify-start" : "justify-end"
-                  }`}
-                >
-                  <div
-                    className={`w-fit p-2 rounded-lg ${
-                      message.isBot
-                        ? "mr-10"
-                        : "bg-gray-950 border-[1px] border-gray-900"
-                    }`}
-                  >
-                    {message.text}
+              {messages[sessionId].map((message, index) => {
+                if (message.tool_name !== undefined && message.tool_output !== undefined) {
+                  return (
+                    <Tools
+                      key={index}
+                      tool={message.tool_name}
+                      output={message.tool_output}
+                    />
+                  );
+                } else {
+                  return (
+                    <div
+                      key={index}
+                      className={`flex ${
+                        message.isBot ? "justify-start" : "justify-end"
+                      }`}
+                    >
+                      <div
+                        className={`w-fit p-2 rounded-lg ${
+                          message.isBot
+                            ? "mr-10"
+                            : "bg-gray-950 border-[1px] border-gray-900"
+                        }`}
+                      >
+                        {message.text}
+                      </div>
+                    </div>
+                  );
+                }
+              })}
+              {loading &&
+                sessionId &&
+                messages[sessionId] &&
+                messages[sessionId].length > 0 &&
+                !messages[sessionId][messages[sessionId].length - 1].isBot && (
+                  <div className="flex justify-start">
+                    <BeatLoader loading={loading} color="white" size={5} />
                   </div>
-                </div>
-              ))}
-              {loading && sessionId && messages[sessionId] && messages[sessionId].length > 0 && !messages[sessionId][messages[sessionId].length - 1].isBot && (
-                <div className="flex justify-start">
-                  <BeatLoader loading={loading} color="white" size={5} />
-                </div>
-               )}
+                )}
             </div>
             <div ref={messagesEndRef} />
           </div>
         )}
 
-        <div className={`p-4 h-fit ${noConversation ? 'my-auto': ''}`}>
+        <div className={`p-4 h-fit ${noConversation ? "my-auto" : ""}`}>
           {noConversation && (
             <div className="my-10 flex flex-col items-center">
               <div className="text-center text-7xl font-extrabold">LEX</div>
               <span>
                 By Segni Dessalegn,{" "}
-                <a className="hover:underline" href="https://segni.dev" target="_blank">
+                <a
+                  className="hover:underline"
+                  href="https://segni.dev"
+                  target="_blank"
+                >
                   segni.dev
                 </a>
               </span>

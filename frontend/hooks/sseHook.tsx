@@ -61,32 +61,37 @@ export const useSSE = () => {
           const { value, done } = await reader.read();
           if (done) break;
           const chunk = decoder.decode(value, { stream: true });
-  
-          // Split the chunk into individual event-data pairs
           const lines = chunk.split("\n").map((line) => line);
           let currentEvent = "";
           let currentData = "";
+          let tool_use = "";
   
           for (const line of lines) {
             if (line.startsWith("event:")) {
               if (currentEvent) {
-                console.log(`event: ${currentEvent}\ndata: ${currentData}`);
+                // console.log(`event=====>: ${currentEvent}\ndata: ${currentData}`, currentEvent === "tool_output");
                 if (currentEvent === "chunk") {
                   dispatch(addMessage({ text: currentData, isBot: true }));
+                } else if (currentEvent === "tool_use") {
+                  tool_use = currentData.trim();
+                } else if (currentEvent === "tool_output") {
+                  dispatch(addMessage({ text: currentData, isBot: true, tool_name: tool_use, tool_output: currentData }));
                 }
-                currentData = ""; // Reset for the next chunk
+                currentData = "";
               }
               currentEvent = line.replace("event:", "").trim();
             } else if (line.startsWith("data:")) {
               currentData = line.replace("data:", "");
             }
           }
-  
-          // Log the last event in the chunk
+
           if (currentEvent) {
-            console.log(`event: ${currentEvent}\ndata: ${currentData}`);
+            // console.log(`event: ${currentEvent}\ndata: ${currentData}`);
             if (currentEvent === "chunk") {
               dispatch(addMessage({ text: currentData, isBot: true }));
+            } else if (currentEvent === "tool_output") {
+              console.log("TOOL USE", tool_use, currentData)
+              dispatch(addMessage({ text: "bla", isBot: true, tool_name: tool_use, tool_output: currentData }));
             }
           }
   

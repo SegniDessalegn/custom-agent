@@ -3,6 +3,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface Message {
   text: string;
   isBot: boolean;
+  tool_name?: string | undefined;
+  tool_output?: string | undefined;
 }
 interface SSEState {
   messages: Record<string, Message[]>;
@@ -32,21 +34,28 @@ const sseSlice = createSlice({
       if (state.sessionId === undefined) {
         state.sessionId = new Date().toLocaleString();
       }
-      // let currentChat = state.messages[state.sessionId];
       if (!state.messages[state.sessionId]) {
         state.messages[state.sessionId] = [];
       }
-
-      if (state.messages[state.sessionId].length === 0) {
-        state.messages[state.sessionId].push(action.payload);
-        return;
-      } else if (action.payload.isBot) {
-        const lastMessage = state.messages[state.sessionId][state.messages[state.sessionId].length - 1];
-        if (lastMessage.isBot === action.payload.isBot) {
-          state.messages[state.sessionId][state.messages[state.sessionId].length - 1].text += action.payload.text;
+      
+      if (action.payload.isBot) {
+        const length = state.messages[state.sessionId].length;
+        if (length === 0 || !state.messages[state.sessionId][length - 1].isBot) {
+          state.messages[state.sessionId].push(action.payload);
           return;
         } else {
-          state.messages[state.sessionId].push(action.payload);
+          if (action.payload.tool_name !== undefined) {
+            state.messages[state.sessionId].push(action.payload);
+            return;
+          }
+          const lastMessage = state.messages[state.sessionId][length - 1];
+          if (lastMessage.tool_name !== undefined) {
+            state.messages[state.sessionId].push(action.payload);
+            return
+          } else {
+            state.messages[state.sessionId][length - 1].text += action.payload.text;
+          }
+          return;
         }
       } else {
         state.messages[state.sessionId].push(action.payload);
