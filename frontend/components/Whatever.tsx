@@ -64,6 +64,7 @@ export default function Page() {
   }
 
   const chats = Object.keys(messages);
+  const noConversation = sessionId === undefined || !messages[sessionId] || messages[sessionId].length === 0
 
   return (
     <div className="flex gap-3 h-screen">
@@ -92,9 +93,9 @@ export default function Page() {
         </div>
       )}
 
-      <div className="flex flex-col w-full h-full">
+      <div className="flex flex-col w-full h-[100vh] justify-end">
         {sessionId && messages[sessionId] && (
-          <div className="flex flex-col justify-end flex-1 h-[calc(100vh-80px)] overflow-y-auto p-5">
+          <div className="flex flex-col overflow-y-auto p-5">
             <div className="space-y-4">
               {messages[sessionId].map((message, index) => (
                 <div
@@ -116,7 +117,7 @@ export default function Page() {
               ))}
               {loading && sessionId && messages[sessionId] && messages[sessionId].length > 0 && !messages[sessionId][messages[sessionId].length - 1].isBot && (
                 <div className="flex justify-start">
-                  <BeatLoader loading={loading} color="gray" size={5} />
+                  <BeatLoader loading={loading} color="white" size={5} />
                 </div>
                )}
             </div>
@@ -124,8 +125,8 @@ export default function Page() {
           </div>
         )}
 
-        <div className="p-4 my-auto">
-          {(sessionId === undefined || !messages[sessionId] || messages[sessionId].length === 0) && (
+        <div className={`p-4 h-fit ${noConversation ? 'my-auto': ''}`}>
+          {noConversation && (
             <div className="my-10 flex flex-col items-center">
               <div className="text-center text-7xl font-extrabold">LEX</div>
               <span>
