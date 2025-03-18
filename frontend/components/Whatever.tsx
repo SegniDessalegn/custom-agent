@@ -34,10 +34,12 @@ export default function Page() {
   }, [messages]);
 
   function handleNewChat() {
+    if (loading) return;
     dispatch(setSessionId(new Date().toLocaleString()));
   }
 
   function handleChatChange(sessionId: string) {
+    if (loading) return;
     dispatch(setSessionId(sessionId));
   }
 
@@ -139,7 +141,7 @@ export default function Page() {
             placeholder="Enter your message"
             autoFocus
             onKeyDown={(e: any) => {
-              if (e.key === "Enter" && e.target.value !== "") {
+              if (e.key === "Enter" && e.target.value !== "" && !loading) {
                 handleSubmit(e.target.value);
                 e.target.value = "";
               }
