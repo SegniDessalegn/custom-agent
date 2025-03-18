@@ -12,6 +12,7 @@ import {
 import { useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
+import { BeatLoader } from "react-spinners";
 
 export default function Page() {
   const dispatch = useDispatch();
@@ -62,8 +63,6 @@ export default function Page() {
 
   const chats = Object.keys(messages);
 
-  console.log("--->", sessionId, sessionId && messages[sessionId]);
-
   return (
     <div className="flex gap-3 h-screen">
       {sessionId !== undefined && (
@@ -113,6 +112,11 @@ export default function Page() {
                   </div>
                 </div>
               ))}
+              {loading && sessionId && messages[sessionId] && messages[sessionId].length > 0 && !messages[sessionId][messages[sessionId].length - 1].isBot && (
+                <div className="flex justify-start">
+                  <BeatLoader loading={loading} color="gray" size={5} />
+                </div>
+               )}
             </div>
             <div ref={messagesEndRef} />
           </div>
@@ -131,7 +135,7 @@ export default function Page() {
             </div>
           )}
           <Input
-            className="w-full max-w-2xl mx-auto"
+            className="w-full max-w-3xl mx-auto"
             placeholder="Enter your message"
             autoFocus
             onKeyDown={(e: any) => {

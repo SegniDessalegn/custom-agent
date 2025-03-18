@@ -37,7 +37,7 @@ export const useSSE = () => {
   // Listen to the SSE events after POST request
   
   const handleSSE = async (sessionId: string, query: string) => {
-    console.log("========", isSSEActive);
+    dispatch(startLoading());
     if (isSSEActive) {
       console.log("================================================");
   
@@ -56,43 +56,45 @@ export const useSSE = () => {
   
         const reader = response.body?.getReader();
         const decoder = new TextDecoder();
-        let message = "";
   
         while (reader) {
           const { value, done } = await reader.read();
           if (done) break;
           const chunk = decoder.decode(value, { stream: true });
-          // message += chunk;
-
-          const eventType = chunk
-            .split("\n")
-            .map((line) => line)
-            .filter((line) => line.startsWith("event:")) // Keep only data lines
-            .map((line) => line.replace("event:", "")); // Remove "data:" prefix
-
-            if (eventType[0].trim() !== "chunk") {
-              continue
+  
+          // Split the chunk into individual event-data pairs
+          const lines = chunk.split("\n").map((line) => line);
+          let currentEvent = "";
+          let currentData = "";
+  
+          for (const line of lines) {
+            if (line.startsWith("event:")) {
+              if (currentEvent) {
+                console.log(`event: ${currentEvent}\ndata: ${currentData}`);
+                if (currentEvent === "chunk") {
+                  dispatch(addMessage({ text: currentData, isBot: true }));
+                }
+                currentData = ""; // Reset for the next chunk
+              }
+              currentEvent = line.replace("event:", "").trim();
+            } else if (line.startsWith("data:")) {
+              currentData = line.replace("data:", "");
             }
-
-          const dataLines = chunk
-            .split("\n")
-            .map((line) => line)
-            .filter((line) => line.startsWith("data:")) // Keep only data lines
-            .map((line) => line.replace("data:", "")); // Remove "data:" prefix
-
-          const newData = {
-            text: dataLines.join(""),
-            isBot: true
           }
-
-          console.log("------", dataLines)
-          console.log(chunk)
-          // dispatch(addMessage(chunk)); // Update Redux with new data
-          dispatch(addMessage(newData)); // Update Redux with new data
+  
+          // Log the last event in the chunk
+          if (currentEvent) {
+            console.log(`event: ${currentEvent}\ndata: ${currentData}`);
+            if (currentEvent === "chunk") {
+              dispatch(addMessage({ text: currentData, isBot: true }));
+            }
+          }
+  
+          if (currentEvent === "end") break;
         }
   
-        dispatch(stopLoading()); // Hide loading after stream ends
-        dispatch(setCanSendMessage(true)); // Enable the input field
+        dispatch(stopLoading());
+        dispatch(setCanSendMessage(true));
       } catch (error) {
         console.error("Error handling SSE:", error);
         dispatch(stopLoading());
