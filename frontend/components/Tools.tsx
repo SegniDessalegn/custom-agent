@@ -14,7 +14,7 @@ const toolColors: { [key: string]: string } = {
 
 const Tools = ({ tool, output }: Props) => {
   const colorClass =
-    toolColors[tool.trim()] || "bg-gray-100 text-gray-700 border-gray-400";
+    toolColors[tool.trim()] || "bg-blue-900/10 text-blue-800";
 
   return (
     <div className={`p-4 border-l-4 rounded-lg ${colorClass} shadow-md`}>
