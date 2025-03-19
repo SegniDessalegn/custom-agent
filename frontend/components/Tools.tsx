@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import AvailableTimes from "./CustomTools/AvailableTimes";
+import Confirmation from "./CustomTools/Confirmation";
 
 type Props = {
   tool: string;
@@ -17,6 +19,29 @@ const toolColors: { [key: string]: string } = {
 const Tools = ({ tool, output }: Props) => {
   const colorClass =
     toolColors[tool.trim()] || "bg-blue-900/10 text-blue-800";
+
+
+if (tool.trim() === "check_appointment_availability") {
+    return (
+        <div className={`p-4 border-l-4 rounded-lg ${colorClass} shadow-md`}>
+      <h3 className="text-lg font-bold">{tool.replaceAll("_", " ")}</h3>
+      <p className="mt-2 text-gray-400">
+      <AvailableTimes times={output} />
+      </p>
+    </div>
+    )
+}
+
+if (tool.trim() === "schedule_appointment") {
+    return (
+        <div className={`p-4 border-l-4 rounded-lg ${colorClass} shadow-md`}>
+      <h3 className="text-lg font-bold">{tool.replaceAll("_", " ")}</h3>
+      <p className="mt-2 text-gray-400">
+        <Confirmation confirmationData={output} />
+      </p>
+    </div>
+    )
+}
 
   return (
     <div className={`p-4 border-l-4 rounded-lg ${colorClass} shadow-md`}>
