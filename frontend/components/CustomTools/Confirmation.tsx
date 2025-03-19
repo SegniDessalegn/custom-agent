@@ -1,4 +1,3 @@
-// Confirmation.tsx
 import { Check } from 'lucide-react';
 import { FC } from 'react';
 

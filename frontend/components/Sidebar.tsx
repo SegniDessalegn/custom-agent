@@ -39,7 +39,7 @@ export default function Sidebar({ chats, handleNewChat, handleChatChange }: Side
         >
           + New Chat
         </Button>
-        <div className="mx-3 mb-5 flex flex-col gap-2">
+        <div className="mx-3 mb-5 flex flex-col-reverse gap-2">
           {chats.map((chat: string) => (
             <div key={chat}>
               <Button
