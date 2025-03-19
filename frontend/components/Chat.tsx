@@ -14,7 +14,7 @@ import { BeatLoader } from "react-spinners";
 import Tools from "./Tools";
 import Sidebar from "./Sidebar";
 
-export default function Page() {
+export default function Chat() {
   const dispatch = useDispatch();
   const { handleSSE } = useSSE();
 
