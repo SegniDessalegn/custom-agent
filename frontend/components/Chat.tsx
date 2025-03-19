@@ -10,10 +10,9 @@ import {
   setSessionId,
 } from "@/store/slices/sseSlice";
 import { useEffect, useRef } from "react";
-import { Button } from "./ui/button";
-import { Separator } from "./ui/separator";
 import { BeatLoader } from "react-spinners";
 import Tools from "./Tools";
+import Sidebar from "./Sidebar";
 
 export default function Page() {
   const dispatch = useDispatch();
@@ -76,28 +75,7 @@ export default function Page() {
   return (
     <div className="flex gap-3 h-screen">
       {chats.length === 1 && (
-        <div className="w-[350px] h-full border-r-2 border-r-gray-900 flex flex-col justify-start">
-          <Button
-            onClick={handleNewChat}
-            className="mx-3 my-5 font-bold cursor-pointer"
-          >
-            + New Chat
-          </Button>
-          <div className="mx-3 mb-5 flex flex-col gap-2">
-            {chats.map((chat: string) => (
-              <div key={chat}>
-                <Button
-                  onClick={() => handleChatChange(chat)}
-                  variant={"link"}
-                  className="pb-2 cursor-pointer shadow-none"
-                >
-                  {chat}
-                </Button>
-                <Separator />
-              </div>
-            ))}
-          </div>
-        </div>
+        <Sidebar chats={chats} handleNewChat={handleNewChat} handleChatChange={handleChatChange} />
       )}
 
       <div className="flex flex-col w-full h-[100vh] justify-end">

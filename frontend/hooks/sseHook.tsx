@@ -49,7 +49,7 @@ export const useSSE = () => {
               } else if (currentEvent === "tool_output") {
                 dispatch(
                   addMessage({
-                    text: currentData,
+                    text: "",
                     isBot: true,
                     tool_name: tool_use,
                     tool_output: extractOutput(currentData),
@@ -70,7 +70,7 @@ export const useSSE = () => {
           } else if (currentEvent === "tool_output") {
             dispatch(
               addMessage({
-                text: "bla",
+                text: "",
                 isBot: true,
                 tool_name: tool_use,
                 tool_output: extractOutput(currentData),
