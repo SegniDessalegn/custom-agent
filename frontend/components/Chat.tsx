@@ -48,7 +48,7 @@ export default function Chat() {
       return;
     }
     if (sessionId === undefined) {
-        dispatch(setSessionId(new Date().toLocaleString()));
+      dispatch(setSessionId(new Date().toLocaleString()));
     }
 
     dispatch(
@@ -62,9 +62,9 @@ export default function Chat() {
     handleSSE(sessionId || "_id", prompt);
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(setSessionId(new Date().toLocaleString()));
-  }, [])
+  }, []);
 
   const chats = Object.keys(messages);
   const noConversation =
@@ -75,7 +75,11 @@ export default function Chat() {
   return (
     <div className="flex gap-3 h-screen">
       {chats.length > 0 && (
-        <Sidebar chats={chats} handleNewChat={handleNewChat} handleChatChange={handleChatChange} />
+        <Sidebar
+          chats={chats}
+          handleNewChat={handleNewChat}
+          handleChatChange={handleChatChange}
+        />
       )}
 
       <div className="flex flex-col w-full h-[100vh] justify-end">
@@ -83,7 +87,10 @@ export default function Chat() {
           <div className="flex flex-col overflow-y-auto p-5">
             <div className="space-y-4">
               {messages[sessionId].map((message, index) => {
-                if (message.tool_name !== undefined && message.tool_output !== undefined) {
+                if (
+                  message.tool_name !== undefined &&
+                  message.tool_output !== undefined
+                ) {
                   return (
                     <Tools
                       key={index}
