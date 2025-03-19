@@ -74,7 +74,7 @@ export default function Chat() {
 
   return (
     <div className="flex gap-3 h-screen">
-      {chats.length === 1 && (
+      {chats.length > 0 && (
         <Sidebar chats={chats} handleNewChat={handleNewChat} handleChatChange={handleChatChange} />
       )}
 
