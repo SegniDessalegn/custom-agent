@@ -22,3 +22,10 @@ export function extractOutput(apiResponse: string): string {
     return "";
   }
 }
+
+export function cleanText(text: string) {
+  return text.normalize("NFKC")
+  .replace(/[^\x20-\x7E]/g, "")
+  .replace(/\s+/g, " ")
+  .trim();
+}

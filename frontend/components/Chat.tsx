@@ -4,15 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import { useSSE } from "@/hooks/sseHook";
 import { Input } from "./ui/input";
-import {
-  addMessage,
-  setCanSendMessage,
-  setSessionId,
-} from "@/store/slices/sseSlice";
+import { addMessage, setSessionId } from "@/store/slices/sseSlice";
 import { useEffect, useRef } from "react";
 import { BeatLoader } from "react-spinners";
 import Tools from "./Tools";
-import Sidebar from "./Sidebar";
+import { cleanText } from "@/lib/utils";
 
 export default function Chat() {
   const dispatch = useDispatch();
@@ -20,9 +16,6 @@ export default function Chat() {
 
   const messages = useSelector((state: RootState) => state.sse.messages);
   const loading = useSelector((state: RootState) => state.sse.loading);
-  const canSendMessage = useSelector(
-    (state: RootState) => state.sse.canSendMessage
-  );
   const sessionId = useSelector((state: RootState) => state.sse.sessionId);
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -58,7 +51,6 @@ export default function Chat() {
       })
     );
 
-    dispatch(setCanSendMessage(false));
     handleSSE(sessionId || "_id", prompt);
   }
 
@@ -73,19 +65,19 @@ export default function Chat() {
     messages[sessionId].length === 0;
 
   return (
-    <div className="flex gap-3 h-screen">
-      {chats.length > 0 && (
+    <div className="flex gap-3">
+      {/* {chats.length > 0 && (
         <Sidebar
           chats={chats}
           handleNewChat={handleNewChat}
           handleChatChange={handleChatChange}
         />
-      )}
+      )} */}
 
-      <div className="flex flex-col w-full h-[100vh] justify-end">
+      <div className="flex flex-col w-full h-[70vh] justify-end">
         {sessionId && messages[sessionId] && (
-          <div className="flex flex-col overflow-y-auto p-5">
-            <div className="space-y-4">
+          <div className="flex flex-col overflow-y-auto">
+            <div className="space-y-4 text-sm">
               {messages[sessionId].map((message, index) => {
                 if (
                   message.tool_name !== undefined &&
@@ -107,13 +99,13 @@ export default function Chat() {
                       }`}
                     >
                       <div
-                        className={`w-fit p-2 rounded-lg ${
+                        className={`w-fit p-2 ${
                           message.isBot
-                            ? "mr-10"
-                            : "bg-gray-950 border-[1px] border-gray-900"
+                            ? "text-gray-300"
+                            : "bg-gray-900 border-[1px] border-gray-800 rounded-lg"
                         }`}
                       >
-                        {message.text}
+                        {cleanText(message.text)}
                       </div>
                     </div>
                   );
@@ -124,7 +116,7 @@ export default function Chat() {
                 messages[sessionId] &&
                 messages[sessionId].length > 0 &&
                 !messages[sessionId][messages[sessionId].length - 1].isBot && (
-                  <div className="flex justify-start">
+                  <div className="flex justify-start ml-2">
                     <BeatLoader loading={loading} color="white" size={5} />
                   </div>
                 )}
@@ -133,11 +125,11 @@ export default function Chat() {
           </div>
         )}
 
-        <div className={`p-4 h-fit ${noConversation ? "my-auto" : ""}`}>
+        <div className="p-2 pt-4 h-fit">
           {noConversation && (
             <div className="my-10 flex flex-col items-center">
-              <div className="text-center text-7xl font-extrabold">LEX</div>
-              <span>
+              <div className="text-center text-4xl font-extrabold">LEX</div>
+              <span className="text-xs">
                 By Segni Dessalegn,{" "}
                 <a
                   className="hover:underline"
@@ -151,7 +143,7 @@ export default function Chat() {
           )}
           <Input
             className="w-full max-w-3xl mx-auto"
-            placeholder="Enter your message"
+            placeholder="Ask me anything..."
             autoFocus
             onKeyDown={(e: any) => {
               if (e.key === "Enter" && e.target.value !== "" && !loading) {

@@ -125,3 +125,12 @@
 nextjs-portal {
   display: none;
 }
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+html, body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}

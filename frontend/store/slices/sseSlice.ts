@@ -9,14 +9,12 @@ interface Message {
 interface SSEState {
   messages: Record<string, Message[]>;
   loading: boolean;
-  canSendMessage: boolean;
   sessionId: string | undefined;
 }
 
 const initialState: SSEState = {
   messages: {},
   loading: false,
-  canSendMessage: true,
   sessionId: undefined,
 };
 
@@ -61,14 +59,11 @@ const sseSlice = createSlice({
         state.messages[state.sessionId].push(action.payload);
       }
     },
-    setCanSendMessage: (state, value: PayloadAction<boolean>) => {
-      state.canSendMessage = value.payload
-    },
     setSessionId: (state, value: PayloadAction<string>) => {
       state.sessionId = value.payload
     }
   },
 });
 
-export const { startLoading, stopLoading, addMessage, setCanSendMessage, setSessionId } = sseSlice.actions;
+export const { startLoading, stopLoading, addMessage, setSessionId } = sseSlice.actions;
 export default sseSlice.reducer;
