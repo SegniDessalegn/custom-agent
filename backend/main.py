@@ -1,6 +1,4 @@
 import copy
-import random
-import string
 
 from fastapi import FastAPI, Depends, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
@@ -71,8 +69,7 @@ async def query_endpoint(payload: QueryRequest, llm: BaseLLM = Depends(get_main_
     Query the agent with a text input.
     """
 
-    # session_id = payload.session_id
-    session_id = random.choice(string.ascii_letters + string.digits) + random.choice(string.ascii_letters + string.digits)
+    session_id = payload.session_id
     query = payload.query
 
     _ = tracer.start_trace(

@@ -19,10 +19,10 @@ def register_tool(func):
 
 from core.tools.extras.extras_tools import get_weather, get_dealership_address, check_appointment_availability, schedule_appointment
 
-register_tool(get_weather)
-register_tool(get_dealership_address)
-register_tool(check_appointment_availability)
-register_tool(schedule_appointment)
+# register_tool(get_weather)
+# register_tool(get_dealership_address)
+# register_tool(check_appointment_availability)
+# register_tool(schedule_appointment)
 
 
 
