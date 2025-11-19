@@ -1,13 +1,13 @@
 llms:
   main:
     type: 'groq'
-    model_id: 'llama3-70b-8192'
+    model_id: 'llama-3.3-70b-versatile'
     aws_region: 'us-east-1'
     temperature: 0
 
   fallback:
     type: 'groq'
-    model_id: 'llama3-70b-8192'
+    model_id: 'llama-3.3-70b-versatile'
     aws_region: 'us-east-1'
     temperature: 0
 
